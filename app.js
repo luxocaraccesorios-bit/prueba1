@@ -2,6 +2,7 @@
   let currentFilter = 'todas';
   let currentBrand = 'todas';
   let allProducts = [];
+  let config = null;
 
   function filterBrand(brand) {
     currentBrand = brand;
@@ -38,7 +39,7 @@
   async function loadFooterLinks() {
     try {
       const response = await fetch('config.json');
-      const config = await response.json();
+      config = await response.json();
       
       // Actualizar links del footer
       const footerLinks = document.querySelector('.footer-links');
@@ -56,15 +57,45 @@
       if (footerBottom) {
         footerBottom.textContent = config.footerText;
       }
+      
+      // Actualizar todos los links de WhatsApp hardcodeados
+      updateWhatsAppLinks(config.whatsapp);
     } catch (error) {
       console.error('Error cargando config:', error);
     }
   }
 
+  // Actualizar todos los links de WhatsApp en el sitio
+  function updateWhatsAppLinks(whatsappUrl) {
+    // Floating WhatsApp
+    const floatWa = document.querySelector('.float-wa');
+    if (floatWa) {
+      floatWa.href = `${whatsappUrl}?text=Hola!%20Vi%20el%20catálogo%20de%20Nardo%20Puro%20y%20quiero%20pedir`;
+    }
+    
+    // Header WhatsApp button
+    const headerWa = document.querySelector('.whatsapp-btn');
+    if (headerWa) {
+      headerWa.href = whatsappUrl;
+    }
+    
+    // Hero WhatsApp button
+    const heroWa = document.querySelector('.hero-cta .btn-outline');
+    if (heroWa) {
+      heroWa.href = whatsappUrl;
+    }
+    
+    // Promo banner WhatsApp button
+    const promoWa = document.querySelector('.promo-banner .btn-dark');
+    if (promoWa) {
+      promoWa.href = `${whatsappUrl}?text=Hola!%20Quiero%20ver%20los%20combos%20especiales`;
+    }
+  }
+
   // Ejecutar cuando el DOM esté listo
   document.addEventListener('DOMContentLoaded', async () => {
-    await loadProducts();
-    loadFooterLinks();
+    await loadFooterLinks(); // Cargar config primero
+    await loadProducts(); // Luego cargar productos
   });
 
   // Cargar productos desde products.json
@@ -72,16 +103,15 @@
     try {
       const response = await fetch('products.json');
       allProducts = await response.json();
-      await renderProducts(allProducts);
+      renderProducts(allProducts);
     } catch (error) {
       console.error('Error cargando productos:', error);
     }
   }
 
   // Renderizar productos en el HTML
-  async function renderProducts(products) {
-    const response = await fetch('config.json');
-      const config = await response.json();
+  function renderProducts(products) {
+    if (!config) return; // Esperar a que config esté cargado
 
     const productGrid = document.getElementById('productGrid');
     if (!productGrid) return;
@@ -106,7 +136,7 @@
                 <span class="price-new">$${product.priceNew.toLocaleString('es-CO')}</span>
                 <span class="price-savings">Ahorras $${savings.toLocaleString('es-CO')} 💚</span>
               </div>
-              <a class="add-btn" href="https://wa.me/${config.whatsapp.split('/').pop()}?text=Quiero%20${encodeURIComponent(product.name)}" target="_blank">+</a>
+              <a class="add-btn" href="${config.whatsapp}?text=Quiero%20${encodeURIComponent(product.name)}" target="_blank">+</a>
             </div>
           </div>
         </div>
