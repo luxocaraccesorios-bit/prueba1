@@ -125,7 +125,11 @@
       return `
         <div class="product-card" data-cat="${product.category}" data-brand="${product.brand}">
           ${badgeHTML}
-          <div class="product-img">${product.image}</div>
+          <div class="product-img">
+            ${product.image.startsWith('./') 
+              ? `<img src="${product.image}" alt="${product.name}" loading="lazy">` 
+              : product.image}
+          </div>
           <div class="product-info">
             <div class="product-brand">${product.brand.charAt(0).toUpperCase() + product.brand.slice(1)}</div>
             <div class="product-name">${product.name}</div>
