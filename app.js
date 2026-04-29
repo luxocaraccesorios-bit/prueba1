@@ -126,7 +126,7 @@
         <div class="product-card" data-cat="${product.category}" data-brand="${product.brand}">
           ${badgeHTML}
           <div class="product-img">
-            ${product.image.startsWith('./') 
+            ${product.image.startsWith('h') 
               ? `<img src="${product.image}" alt="${product.name}" loading="lazy">` 
               : product.image}
           </div>
