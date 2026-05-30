@@ -1,149 +1,203 @@
-
-  let currentFilter = 'todas';
-  let currentBrand = 'todas';
-  let allProducts = [];
-  let config = null;
-
-  function filterBrand(brand) {
-    currentBrand = brand;
-    document.querySelectorAll('.brand-pill').forEach(p => p.classList.remove('active'));
-    event.target.classList.add('active');
-    applyFilters();
+// Datos de productos
+const products = [
+  {
+    id: 1,
+    name: "Perfume Signature",
+    brand: "esika",
+    category: "perfumes",
+    emoji: "🌸",
+    priceOriginal: 89000,
+    priceRevista: 120000,
+    description: "Fragancia floral y sofisticada",
+    badge: "hot"
+  },
+  {
+    id: 2,
+    name: "Base de Maquillaje",
+    brand: "lbel",
+    category: "maquillaje",
+    emoji: "💄",
+    priceOriginal: 45000,
+    priceRevista: 65000,
+    description: "Cobertura total y larga duración",
+    badge: "sale"
+  },
+  {
+    id: 3,
+    name: "Labial Mate",
+    brand: "cyzone",
+    category: "maquillaje",
+    emoji: "💋",
+    priceOriginal: 32000,
+    priceRevista: 48000,
+    description: "Color intenso y resistente",
+    badge: "new"
+  },
+  {
+    id: 4,
+    name: "Crema Facial",
+    brand: "yanbal",
+    category: "cuidado",
+    emoji: "✨",
+    priceOriginal: 55000,
+    priceRevista: 85000,
+    description: "Hidratación profunda 24h",
+    badge: null
+  },
+  {
+    id: 5,
+    name: "Sérum Vitamina C",
+    brand: "unique",
+    category: "cuidado",
+    emoji: "🧴",
+    priceOriginal: 62000,
+    priceRevista: 95000,
+    description: "Antioxidante y luminosidad",
+    badge: "sale"
+  },
+  {
+    id: 6,
+    name: "Perfume Floral",
+    brand: "lbel",
+    category: "perfumes",
+    emoji: "🌺",
+    priceOriginal: 75000,
+    priceRevista: 110000,
+    description: "Aroma fresco y duradero",
+    badge: null
   }
+];
 
-  function setFilter(el, cat) {
-    currentFilter = cat;
-    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-    el.classList.add('active');
-    applyFilters();
-  }
+let currentFilter = 'todas';
+let currentCategory = 'todas';
 
-  function searchProducts() {
-    applyFilters();
-  }
+// Actualizar número de WhatsApp (REEMPLAZAR CON TU NÚMERO)
+const WHATSAPP_NUMBER = '573001234567'; // ← Reemplazar con tu número
+const WHATSAPP_MESSAGE = 'Hola, quiero hacer un pedido en Nardo Puro Colombia';
 
-  function applyFilters() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
-    document.querySelectorAll('.product-card').forEach(card => {
-      const cat = card.dataset.cat;
-      const brand = card.dataset.brand;
-      const text = card.innerText.toLowerCase();
-      const catOk = currentFilter === 'todas' || cat === currentFilter;
-      const brandOk = currentBrand === 'todas' || brand === currentBrand;
-      const searchOk = query === '' || text.includes(query);
-      card.style.display = (catOk && brandOk && searchOk) ? '' : 'none';
-    });
-  }
+function initializeApp() {
+  updateWhatsAppLinks();
+  renderProducts(products);
+  setupEventListeners();
+}
 
-  // Cargar datos del footer desde config.json
-  async function loadFooterLinks() {
-    try {
-      const response = await fetch('config.json');
-      config = await response.json();
-      
-      // Actualizar links del footer
-      const footerLinks = document.querySelector('.footer-links');
-      if (footerLinks) {
-        footerLinks.innerHTML = `
-          <a href="${config.whatsapp}" target="_blank">💬 WhatsApp</a>
-          <a href="${config.instagram}" target="_blank">📱 Instagram</a>
-          <a href="${config.tiktok}" target="_blank">🎵 TikTok</a>
-          <a href="#">📍 Colombia</a>
-        `;
-      }
-      
-      // Actualizar footer text
-      const footerBottom = document.querySelector('.footer-bottom span');
-      if (footerBottom) {
-        footerBottom.textContent = config.footerText;
-      }
-      
-      // Actualizar todos los links de WhatsApp hardcodeados
-      updateWhatsAppLinks(config.whatsapp);
-    } catch (error) {
-      console.error('Error cargando config:', error);
-    }
-  }
-
-  // Actualizar todos los links de WhatsApp en el sitio
-  function updateWhatsAppLinks(whatsappUrl) {
-    // Floating WhatsApp
-    const floatWa = document.querySelector('.float-wa');
-    if (floatWa) {
-      floatWa.href = `${whatsappUrl}?text=Hola!%20Vi%20el%20catálogo%20de%20Nardo%20Puro%20y%20quiero%20pedir`;
-    }
-    
-    // Header WhatsApp button
-    const headerWa = document.querySelector('.whatsapp-btn');
-    if (headerWa) {
-      headerWa.href = whatsappUrl;
-    }
-    
-    // Hero WhatsApp button
-    const heroWa = document.querySelector('.hero-cta .btn-outline');
-    if (heroWa) {
-      heroWa.href = whatsappUrl;
-    }
-    
-    // Promo banner WhatsApp button
-    const promoWa = document.querySelector('.promo-banner .btn-dark');
-    if (promoWa) {
-      promoWa.href = `${whatsappUrl}?text=Hola!%20Quiero%20ver%20los%20combos%20especiales`;
-    }
-  }
-
-  // Ejecutar cuando el DOM esté listo
-  document.addEventListener('DOMContentLoaded', async () => {
-    await loadFooterLinks(); // Cargar config primero
-    await loadProducts(); // Luego cargar productos
+function updateWhatsAppLinks() {
+  const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
+  
+  document.querySelectorAll('.float-wa, .whatsapp-btn').forEach(el => {
+    el.href = waLink;
   });
+  
+  document.querySelectorAll('.btn-outline').forEach(el => {
+    el.href = waLink;
+  });
+  
+  document.querySelector('.btn-dark').href = waLink;
+}
 
-  // Cargar productos desde products.json
-  async function loadProducts() {
-    try {
-      const response = await fetch('products.json');
-      allProducts = await response.json();
-      renderProducts(allProducts);
-    } catch (error) {
-      console.error('Error cargando productos:', error);
-    }
+function setupEventListeners() {
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', searchProducts);
   }
+}
 
-  // Renderizar productos en el HTML
-  function renderProducts(products) {
-    if (!config) return; // Esperar a que config esté cargado
+function filterBrand(brand) {
+  currentFilter = brand;
+  const brandPills = document.querySelectorAll('.brand-pill');
+  brandPills.forEach(pill => pill.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  const filtered = brand === 'todas' 
+    ? products 
+    : products.filter(p => p.brand === brand);
+  
+  renderProducts(filtered);
+}
 
-    const productGrid = document.getElementById('productGrid');
-    if (!productGrid) return;
+function setFilter(element, category) {
+  currentCategory = category;
+  document.querySelectorAll('.filter-pill').forEach(el => el.classList.remove('active'));
+  element.classList.add('active');
+  
+  const filtered = filterProductsByCategory();
+  renderProducts(filtered);
+}
 
-    productGrid.innerHTML = products.map(product => {
-      const savings = product.priceRevista - product.priceNew;
-      const badgeHTML = product.badge 
-        ? `<div class="badge-hot${product.badge.includes('-') ? ' badge-sale' : ' badge-new'}">${product.badge}</div>`
-        : '';
+function filterProductsByCategory() {
+  let filtered = products;
+  
+  if (currentFilter !== 'todas') {
+    filtered = filtered.filter(p => p.brand === currentFilter);
+  }
+  
+  if (currentCategory !== 'todas') {
+    filtered = filtered.filter(p => p.category === currentCategory);
+  }
+  
+  return filtered;
+}
 
-      return `
-        <div class="product-card" data-cat="${product.category}" data-brand="${product.brand}">
-          ${badgeHTML}
-          <div class="product-img">
-            ${product.image.startsWith('h') 
-              ? `<img src="${product.image}" alt="${product.name}" loading="lazy">` 
-              : product.image}
-          </div>
-          <div class="product-info">
-            <div class="product-brand">${product.brand.charAt(0).toUpperCase() + product.brand.slice(1)}</div>
-            <div class="product-name">${product.name}</div>
-            <div class="product-desc">${product.description}</div>
-            <div class="price-row">
-              <div class="price-group">
-                <span class="price-revista">Revista: $${product.priceRevista.toLocaleString('es-CO')}</span>
-                <span class="price-new">$${product.priceNew.toLocaleString('es-CO')}</span>
-                <span class="price-savings">Ahorras $${savings.toLocaleString('es-CO')} 💚</span>
-              </div>
-              <a class="add-btn" href="${config.whatsapp}?text=Quiero%20${encodeURIComponent(product.name)}" target="_blank">+</a>
+function searchProducts() {
+  const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+  
+  if (!searchTerm) {
+    renderProducts(filterProductsByCategory());
+    return;
+  }
+  
+  const filtered = filterProductsByCategory().filter(p => 
+    p.name.toLowerCase().includes(searchTerm) ||
+    p.brand.toLowerCase().includes(searchTerm) ||
+    p.category.toLowerCase().includes(searchTerm) ||
+    p.description.toLowerCase().includes(searchTerm)
+  );
+  
+  renderProducts(filtered);
+}
+
+function renderProducts(productsToRender) {
+  const grid = document.getElementById('productGrid');
+  
+  if (!grid) return;
+  
+  if (productsToRender.length === 0) {
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--muted);">No hay productos disponibles</div>';
+    return;
+  }
+  
+  grid.innerHTML = productsToRender.map(product => {
+    const savings = Math.round(((product.priceRevista - product.priceOriginal) / product.priceRevista) * 100);
+    const badgeClass = product.badge ? `badge-${product.badge}` : '';
+    const badgeText = product.badge ? product.badge.toUpperCase() : '';
+    
+    return `
+      <div class="product-card">
+        <div class="product-img">
+          ${product.emoji}
+          ${product.badge ? `<div class="badge-hot ${badgeClass}">${badgeText}</div>` : ''}
+        </div>
+        <div class="product-info">
+          <div class="product-brand">${product.brand.toUpperCase()}</div>
+          <div class="product-name">${product.name}</div>
+          <div class="product-desc">${product.description}</div>
+          <div class="price-row">
+            <div class="price-group">
+              <div class="price-revista">Revista: $${product.priceRevista.toLocaleString()}</div>
+              <div class="price-new">$${product.priceOriginal.toLocaleString()}</div>
+              <div class="price-savings">-${savings}% de ahorro</div>
             </div>
+            <a href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE + ' - ' + product.name)}" class="add-btn" target="_blank">💬</a>
           </div>
         </div>
-      `;
-    }).join('');
-  }
+      </div>
+    `;
+  }).join('');
+}
+
+// Inicializar la aplicación cuando el DOM esté listo
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+  initializeApp();
+}

@@ -78,7 +78,7 @@
 <!-- SEARCH -->
 <div class="search-wrap">
   <div class="search-box">
-    <input type="text" placeholder="Buscar producto, marca o categoría..." id="searchInput" oninput="searchProducts()">
+    <input type="text" placeholder="Buscar producto, marca o categoría..." id="searchInput">
     <button>🔍</button>
   </div>
 </div>
@@ -104,7 +104,7 @@
   </div>
 
   <div class="product-grid" id="productGrid">
-    <!-- Los productos se generan automáticamente desde products.json -->
+    <!-- Los productos se generan automáticamente desde app.js -->
   </div>
 </section>
 
@@ -159,26 +159,28 @@
     <div>
       <div class="footer-title">Categorías</div>
       <div class="footer-links">
-        <a href="#">Perfumes y colonias</a>
-        <a href="#">Maquillaje</a>
-        <a href="#">Cuidado de la piel</a>
-        <a href="#">Cabello</a>
-        <a href="#">Cuerpo y baño</a>
+        <a href="#catalogo">Perfumes y colonias</a>
+        <a href="#catalogo">Maquillaje</a>
+        <a href="#catalogo">Cuidado de la piel</a>
+        <a href="#catalogo">Cabello</a>
+        <a href="#catalogo">Cuerpo y baño</a>
       </div>
     </div>
     <div>
       <div class="footer-title">Contacto</div>
       <div class="footer-links">
-  
+        <a href="#" onclick="document.querySelector('.float-wa').click(); return false;">💬 WhatsApp</a>
+        <a href="mailto:info@nardopuro.com">📧 Email</a>
+        <a href="#catalogo">📱 Catálogo</a>
       </div>
     </div>
   </div>
   <div class="footer-bottom">
     <span>© 2026 Nardo Puro Colombia · Todos los derechos reservados</span>
     <div class="social-links">
-      <div class="social-link">📱</div>
-      <div class="social-link">📸</div>
-      <div class="social-link">💬</div>
+      <a href="#" class="social-link">📱</a>
+      <a href="#" class="social-link">📸</a>
+      <a href="#" class="social-link">💬</a>
     </div>
   </div>
 </footer>
